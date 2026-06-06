@@ -151,6 +151,8 @@
     text-decoration: none;
     border-radius: 2px;
     transition: background 0.2s, transform 0.2s;
+    cursor: pointer;
+    border: none;
   }
   .cta-btn:hover { background: #fff; transform: translateY(-1px); }
 
@@ -177,6 +179,8 @@
     letter-spacing: 0.05em;
     transition: all 0.2s;
     border: 1px solid transparent;
+    cursor: pointer;
+    background: none;
   }
 
   .nav-pill:hover { color: #fff; }
@@ -226,6 +230,7 @@
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     opacity: 0;
     transform: translateY(20px);
+    cursor: pointer;
   }
   .work-card.visible {
     opacity: 1;
@@ -316,6 +321,7 @@
     text-transform: uppercase;
     letter-spacing: 0.05em;
     transition: color 0.2s;
+    cursor: pointer;
   }
   .card-link:hover { color: var(--accent); }
   .card-link svg { width: 12px; height: 12px; }
@@ -444,7 +450,12 @@
     text-transform: uppercase;
     letter-spacing: 0.1em;
   }
-  .modal-video { width: 100%; height: 100%; border: none; }
+  .modal-video { 
+    width: 100%; 
+    height: 100%; 
+    border: none;
+    display: block;
+  }
 
   @media (max-width: 768px) {
     .header-inner { flex-direction: column; align-items: flex-start; }
@@ -477,9 +488,9 @@
   </header>
 
   <nav class="section-nav">
-    <a href="#portfolio" class="nav-pill active" data-section="portfolio">Portfolio</a>
-    <a href="#tools" class="nav-pill" data-section="tools">Tools</a>
-    <a href="#pricing" class="nav-pill" data-section="pricing">Pricing</a>
+    <button class="nav-pill active" data-section="portfolio">Portfolio</button>
+    <button class="nav-pill" data-section="tools">Tools</button>
+    <button class="nav-pill" data-section="pricing">Pricing</button>
   </nav>
 
   <!-- PORTFOLIO SECTION -->
@@ -498,7 +509,6 @@
       <span class="tool-tag">Pika Labs</span>
       <span class="tool-tag">Midjourney v6</span>
       <span class="tool-tag">Leonardo AI</span>
-      <span class="tool-tag">Stable Diffusion</span>
       <span class="tool-tag">Topaz Video AI</span>
       <span class="tool-tag">Adobe Firefly</span>
       <span class="tool-tag">Magnific AI</span>
@@ -568,21 +578,21 @@
 <div class="modal" id="video-modal">
   <button class="close-modal" id="close-modal">Close [Esc]</button>
   <div class="modal-content">
-    <div id="video-container" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #fff;">
-      <!-- Video or message will go here -->
-      Video Preview Not Available in Static Mockup
-    </div>
+    <video id="modal-video" class="modal-video" controls>
+      <source src="" type="video/mp4">
+      Your browser does not support the video tag.
+    </video>
   </div>
 </div>
 
 <script>
   const portfolioData = [
-    { id: '01', title: 'Hero Reel', meta: '01 / 11', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800' },
-    { id: '02', title: 'Cinematic Cut', meta: '02 / 11', img: 'https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&q=80&w=800' },
-    { id: '03', title: 'AI Production', meta: '03 / 11', img: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800' },
-    { id: '04', title: 'Brand Visual', meta: '04 / 11', img: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800' },
-    { id: '05', title: 'Motion Sequence', meta: '05 / 11', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800' },
-    { id: '06', title: 'Cinematic Production', meta: '06 / 11', img: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=800' }
+    { id: '01', title: 'Hero Reel', meta: '01 / 11', video: 'videos/video01.mp4' },
+    { id: '02', title: 'Cinematic Cut', meta: '02 / 11', video: 'videos/video02.mp4' },
+    { id: '03', title: 'AI Production', meta: '03 / 11', video: 'videos/video03.mp4' },
+    { id: '04', title: 'Brand Visual', meta: '04 / 11', video: 'videos/video04.mp4' },
+    { id: '05', title: 'Motion Sequence', meta: '05 / 11', video: 'videos/video05.mp4' },
+    { id: '06', title: 'Cinematic Production', meta: '06 / 11', video: 'videos/video01.mp4' }
   ];
 
   const grid = document.getElementById('portfolio-grid');
@@ -593,7 +603,9 @@
     card.style.transitionDelay = `${index * 0.1}s`;
     card.innerHTML = `
       <div class="card-media">
-        <img src="${item.img}" alt="${item.title}">
+        <video style="width: 100%; height: 100%; object-fit: cover; opacity: 0.6;">
+          <source src="${item.video}" type="video/mp4">
+        </video>
         <div class="play-overlay">
           <div class="play-icon">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
@@ -603,8 +615,8 @@
       <div class="card-info">
         <p class="card-meta">${item.meta}</p>
         <h3 class="card-title">${item.title}</h3>
-        <a href="#" class="card-link">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2v12H5a2 2v-2V8a2 2v-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        <a href="#" class="card-link" data-video="${item.video}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
           Open full screen
         </a>
       </div>
@@ -637,23 +649,33 @@
   // Modal logic
   const modal = document.getElementById('video-modal');
   const closeBtn = document.getElementById('close-modal');
+  const modalVideo = document.getElementById('modal-video');
   
   document.addEventListener('click', (e) => {
-    if (e.target.closest('.work-card')) {
+    const cardLink = e.target.closest('.card-link');
+    if (cardLink) {
+      e.preventDefault();
+      const videoSrc = cardLink.getAttribute('data-video');
+      modalVideo.src = videoSrc;
       modal.classList.add('active');
       document.body.style.overflow = 'hidden';
+      modalVideo.play();
     }
   });
 
   closeBtn.addEventListener('click', () => {
     modal.classList.remove('active');
     document.body.style.overflow = 'auto';
+    modalVideo.pause();
+    modalVideo.src = '';
   });
 
   modal.addEventListener('click', (e) => {
     if (e.target === modal) {
       modal.classList.remove('active');
       document.body.style.overflow = 'auto';
+      modalVideo.pause();
+      modalVideo.src = '';
     }
   });
 
@@ -661,6 +683,8 @@
     if (e.key === 'Escape' && modal.classList.contains('active')) {
       modal.classList.remove('active');
       document.body.style.overflow = 'auto';
+      modalVideo.pause();
+      modalVideo.src = '';
     }
   });
 </script>
