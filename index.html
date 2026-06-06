@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Astro Tobby — AI Video Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #080a0f;
+    --surface: #0e1118;
+    --card: #121620;
+    --border: #1e2535;
+    --accent: #00e5ff;
+    --accent2: #7b61ff;
+    --text: #e8eaf0;
+    --muted: #6b7592;
+    --glow: rgba(0,229,255,0.15);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 300;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* Ambient background */
+  body::before {
+    content: '';
+    position: fixed;
+    top: -30%;
+    left: -20%;
+    width: 70vw;
+    height: 70vw;
+    background: radial-gradient(circle, rgba(0,229,255,0.04) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  body::after {
+    content: '';
+    position: fixed;
+    bottom: -20%;
+    right: -20%;
+    width: 60vw;
+    height: 60vw;
+    background: radial-gradient(circle, rgba(123,97,255,0.05) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  header {
+    padding: 60px 0 40px;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+
+  .logo-block {}
+
+  .logo-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 10px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.1s forwards;
+  }
+
+  .logo-name {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2.2rem, 6vw, 4rem);
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    color: #fff;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.2s forwards;
+  }
+
+  .logo-name span {
+    color: var(--accent);
+  }
+
+  .logo-tagline {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 10px;
+    max-width: 380px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.3s forwards;
+  }
+
+  .header-contact {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.4s forwards;
+  }
+
+  .contact-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 13px;
+    transition: color 0.2s;
+  }
+  .contact-link:hover { color: var(--accent); }
+  .contact-link svg { width: 14px; height: 14px; opacity: 0.7; }
+
+  .cta-btn {
+    display: inline-block;
+    margin-top: 8px;
+    padding: 10px 22px;
+    background: var(--accent);
+    color: #000;
+    font-family: 'Syne', sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 2px;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .cta-btn:hover { background: #fff; transform: translateY(-1px); }
+
+  /* NAV PILLS */
+  .section-nav {
+    display: flex;
+    gap: 4px;
+    padding: 20px 0;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    z-index: 1;
+    opacity: 0;
+    animation: fadeUp 0.6s 0.5s forwards;
+  }
+
+  .nav-pill {
+    padding: 6px 16px;
+    border-radius: 2px;
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .nav-pill:hover { color: #fff; }
+  .nav-pill.active {
+    background: var(--surface);
+    color: var(--accent);
+    border-color: var(--border);
+  }
+
+  /* SECTIONS */
+  section {
+    padding: 80px 0;
+    display: none;
+  }
+  section.active { display: block; }
+
+  .section-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 40px;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+  }
+  .section-title::after {
+    content: '';
+    height: 1px;
+    flex-grow: 1;
+    background: var(--border);
+  }
+
+  /* GRID */
+  .work-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 30px;
+  }
+
+  .work-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .work-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .work-card:hover {
+    border-color: var(--accent);
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px -10px rgba(0,0,0,0.5);
+  }
+
+  .card-media {
+    aspect-ratio: 16/9;
+    background: #000;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card-media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.6;
+    transition: transform 0.5s, opacity 0.3s;
+  }
+  .work-card:hover .card-media img {
+    transform: scale(1.05);
+    opacity: 0.8;
+  }
+
+  .play-overlay {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(8, 10, 15, 0.2);
+    transition: background 0.3s;
+  }
+  .work-card:hover .play-overlay {
+    background: rgba(8, 10, 15, 0);
+  }
+
+  .play-icon {
+    width: 48px;
+    height: 48px;
+    background: var(--accent);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #000;
+    box-shadow: 0 0 20px var(--glow);
+    transition: transform 0.3s;
+  }
+  .work-card:hover .play-icon {
+    transform: scale(1.1);
+  }
+
+  .card-info {
+    padding: 20px;
+  }
+
+  .card-meta {
+    font-size: 10px;
+    color: var(--accent);
+    font-weight: 700;
+    margin-bottom: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  .card-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 18px;
+    font-weight: 700;
+    color: #fff;
+    margin-bottom: 12px;
+  }
+
+  .card-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    transition: color 0.2s;
+  }
+  .card-link:hover { color: var(--accent); }
+  .card-link svg { width: 12px; height: 12px; }
+
+  /* PRICING */
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 24px;
+  }
+
+  .price-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.3s;
+  }
+  .price-card:hover { border-color: var(--accent); }
+
+  .price-header { margin-bottom: 30px; }
+  .price-name {
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    margin-bottom: 10px;
+  }
+  .price-amount {
+    font-family: 'Syne', sans-serif;
+    font-size: 48px;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1;
+  }
+  .price-amount span { font-size: 16px; color: var(--muted); font-weight: 400; }
+
+  .price-features {
+    list-style: none;
+    margin-bottom: 40px;
+    flex-grow: 1;
+  }
+  .price-features li {
+    font-size: 14px;
+    color: var(--text);
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .price-features li::before {
+    content: '→';
+    color: var(--accent);
+    font-weight: 700;
+  }
+
+  /* TOOLS */
+  .tools-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  .tool-tag {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    padding: 8px 16px;
+    font-size: 13px;
+    color: var(--text);
+    border-radius: 2px;
+  }
+
+  /* FOOTER */
+  footer {
+    padding: 80px 0;
+    border-top: 1px solid var(--border);
+    margin-top: 40px;
+    text-align: center;
+  }
+
+  .footer-text {
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(15px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* MODAL */
+  .modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(5, 6, 10, 0.95);
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 40px;
+    backdrop-filter: blur(10px);
+  }
+  .modal.active { display: flex; }
+  .modal-content {
+    width: 100%;
+    max-width: 1000px;
+    aspect-ratio: 16/9;
+    background: #000;
+    box-shadow: 0 0 50px rgba(0,0,0,0.5);
+    position: relative;
+  }
+  .close-modal {
+    position: absolute;
+    top: -40px;
+    right: 0;
+    color: #fff;
+    background: none;
+    border: none;
+    font-size: 14px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .modal-video { width: 100%; height: 100%; border: none; }
+
+  @media (max-width: 768px) {
+    .header-inner { flex-direction: column; align-items: flex-start; }
+    .header-contact { align-items: flex-start; margin-top: 20px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <div class="header-inner">
+      <div class="logo-block">
+        <p class="logo-eyebrow">AI Video Creator • PixelMind Studio</p>
+        <h1 class="logo-name">Astro<span>Tobby</span></h1>
+        <p class="logo-tagline">Cinematic AI video production for brands and businesses that demand attention.</p>
+      </div>
+      <div class="header-contact">
+        <a href="mailto:chanzeratobias@gmail.com" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          chanzeratobias@gmail.com
+        </a>
+        <a href="https://twitter.com/astrotobby" class="contact-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/></svg>
+          @astrotobby
+        </a>
+        <a href="mailto:chanzeratobias@gmail.com" class="cta-btn">Hire Me</a>
+      </div>
+    </div>
+  </header>
+
+  <nav class="section-nav">
+    <a href="#portfolio" class="nav-pill active" data-section="portfolio">Portfolio</a>
+    <a href="#tools" class="nav-pill" data-section="tools">Tools</a>
+    <a href="#pricing" class="nav-pill" data-section="pricing">Pricing</a>
+  </nav>
+
+  <!-- PORTFOLIO SECTION -->
+  <section id="portfolio" class="active">
+    <h2 class="section-title">Featured Work</h2>
+    <div class="work-grid" id="portfolio-grid">
+      <!-- Items will be injected by JS -->
+    </div>
+  </section>
+
+  <!-- TOOLS SECTION -->
+  <section id="tools">
+    <h2 class="section-title">AI Stack</h2>
+    <div class="tools-list">
+      <span class="tool-tag">Runway Gen-2</span>
+      <span class="tool-tag">Pika Labs</span>
+      <span class="tool-tag">Midjourney v6</span>
+      <span class="tool-tag">Leonardo AI</span>
+      <span class="tool-tag">Stable Diffusion</span>
+      <span class="tool-tag">Topaz Video AI</span>
+      <span class="tool-tag">Adobe Firefly</span>
+      <span class="tool-tag">Magnific AI</span>
+      <span class="tool-tag">ElevenLabs</span>
+      <span class="tool-tag">Suno AI</span>
+      <span class="tool-tag">After Effects</span>
+      <span class="tool-tag">DaVinci Resolve</span>
+    </div>
+  </section>
+
+  <!-- PRICING SECTION -->
+  <section id="pricing">
+    <h2 class="section-title">Packages</h2>
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-header">
+          <p class="price-name">Starter Pack</p>
+          <p class="price-amount">$25<span>/video</span></p>
+        </div>
+        <ul class="price-features">
+          <li>Up to 5 seconds of 4K video</li>
+          <li>Custom AI image generation</li>
+          <li>Cinematic motion & physics</li>
+          <li>Color grading & enhancement</li>
+          <li>24-hour delivery</li>
+        </ul>
+        <a href="mailto:chanzeratobias@gmail.com" class="cta-btn">Order Now</a>
+      </div>
+
+      <div class="price-card">
+        <div class="price-header">
+          <p class="price-name">Professional</p>
+          <p class="price-amount">$50<span>/project</span></p>
+        </div>
+        <ul class="price-features">
+          <li>15-30 second edited video</li>
+          <li>Multiple AI generated scenes</li>
+          <li>Custom sound design & SFX</li>
+          <li>Professional editing & pacing</li>
+          <li>48-hour delivery</li>
+        </ul>
+        <a href="mailto:chanzeratobias@gmail.com" class="cta-btn">Order Now</a>
+      </div>
+
+      <div class="price-card">
+        <div class="price-header">
+          <p class="price-name">Custom Production</p>
+          <p class="price-amount">Custom</p>
+        </div>
+        <ul class="price-features">
+          <li>Full commercial productions</li>
+          <li>Custom AI voiceovers</li>
+          <li>Extended video lengths</li>
+          <li>Strategic brand direction</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="mailto:chanzeratobias@gmail.com" class="cta-btn">Get Quote</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p class="footer-text">© 2024 PixelMind Studio • AstroTobby</p>
+  </footer>
+</div>
+
+<div class="modal" id="video-modal">
+  <button class="close-modal" id="close-modal">Close [Esc]</button>
+  <div class="modal-content">
+    <div id="video-container" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #fff;">
+      <!-- Video or message will go here -->
+      Video Preview Not Available in Static Mockup
+    </div>
+  </div>
+</div>
+
+<script>
+  const portfolioData = [
+    { id: '01', title: 'Hero Reel', meta: '01 / 11', img: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&q=80&w=800' },
+    { id: '02', title: 'Cinematic Cut', meta: '02 / 11', img: 'https://images.unsplash.com/photo-1633167606207-d840b5070fc2?auto=format&fit=crop&q=80&w=800' },
+    { id: '03', title: 'AI Production', meta: '03 / 11', img: 'https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?auto=format&fit=crop&q=80&w=800' },
+    { id: '04', title: 'Brand Visual', meta: '04 / 11', img: 'https://images.unsplash.com/photo-1614850523296-d8c1af93d400?auto=format&fit=crop&q=80&w=800' },
+    { id: '05', title: 'Motion Sequence', meta: '05 / 11', img: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&q=80&w=800' },
+    { id: '06', title: 'Cinematic Production', meta: '06 / 11', img: 'https://images.unsplash.com/photo-1635070041078-e363dbe005cb?auto=format&fit=crop&q=80&w=800' }
+  ];
+
+  const grid = document.getElementById('portfolio-grid');
+  
+  portfolioData.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'work-card';
+    card.style.transitionDelay = `${index * 0.1}s`;
+    card.innerHTML = `
+      <div class="card-media">
+        <img src="${item.img}" alt="${item.title}">
+        <div class="play-overlay">
+          <div class="play-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </div>
+        </div>
+      </div>
+      <div class="card-info">
+        <p class="card-meta">${item.meta}</p>
+        <h3 class="card-title">${item.title}</h3>
+        <a href="#" class="card-link">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2v12H5a2 2v-2V8a2 2v-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+          Open full screen
+        </a>
+      </div>
+    `;
+    grid.appendChild(card);
+    
+    // Intersection Observer for fade in
+    setTimeout(() => card.classList.add('visible'), 100);
+  });
+
+  // Section Switching
+  const navPills = document.querySelectorAll('.nav-pill');
+  const sections = document.querySelectorAll('section');
+
+  navPills.forEach(pill => {
+    pill.addEventListener('click', (e) => {
+      e.preventDefault();
+      const target = pill.getAttribute('data-section');
+      
+      navPills.forEach(p => p.classList.remove('active'));
+      pill.classList.add('active');
+      
+      sections.forEach(s => {
+        s.classList.remove('active');
+        if (s.id === target) s.classList.add('active');
+      });
+    });
+  });
+
+  // Modal logic
+  const modal = document.getElementById('video-modal');
+  const closeBtn = document.getElementById('close-modal');
+  
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('.work-card')) {
+      modal.classList.add('active');
+      document.body.style.overflow = 'hidden';
+    }
+  });
+
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('active');
+    document.body.style.overflow = 'auto';
+  });
+
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('active')) {
+      modal.classList.remove('active');
+      document.body.style.overflow = 'auto';
+    }
+  });
+</script>
+
+</body>
+</html>
